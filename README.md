@@ -14,6 +14,10 @@ le manda las órdenes por su API.
 Idioma del proyecto: español. Pensado para uso local en un PC con GPU (NVIDIA
 recomendado).
 
+> **Lo mínimo para empezar:** Python + ComfyUI + **un solo** modelo.
+> Son unos **12 GB de disco** y **6–8 GB de VRAM**. No hace falta descargar los
+> 6 modelos ni tener una GPU potente: ver [Requisitos](#3-requisitos).
+
 ---
 
 ## Índice
@@ -99,16 +103,89 @@ que se instala por separado (paso 4.2).
 
 ## 3. Requisitos
 
+Antes de nada: **no necesitas descargar los 6 modelos ni tener una GPU potente.**
+Con Python, ComfyUI y **un** modelo ya funciona. Aquí está todo lo que hay que
+bajar y cuánta VRAM hace falta de verdad.
+
+### 3.1 Checklist: todo lo que hay que descargar
+
+| # | Qué | Peso | ¿Obligatorio? | Dónde va |
+|---|---|---|---|---|
+| 1 | **Python 3.10 o superior** | ~30 MB | Sí | Instalador del sistema |
+| 2 | **ComfyUI** (el motor) | ~5 GB | Sí | Carpeta aparte, ej. `C:\ComfyUI` |
+| 3 | **Un modelo SDXL** (ver 4.3) | ~6.5 GB | Sí, basta con uno | `ComfyUI/models/checkpoints/` |
+| 4 | **Este repositorio** | < 1 MB | Sí | Donde quieras |
+| 5 | Los otros 5 modelos del catálogo | ~6.5 GB cada uno | Opcional | `ComfyUI/models/checkpoints/` |
+| 6 | LoRA CleanLineArt | ~18 MB | Opcional | `ComfyUI/models/loras/` |
+| 7 | Git (solo para clonar) | ~50 MB | Opcional ¹ | — |
+
+¹ La versión portable de ComfyUI para Windows no necesita Git.
+
+| Escenario | Disco necesario | Qué descargas |
+|---|---|---|
+| **Mínimo para empezar** | **~12 GB** | Python + ComfyUI + 1 modelo + este repo |
+| Cómodo | ~25 GB | 3 modelos + LoRA |
+| Catálogo completo | ~45 GB | Los 6 modelos + LoRA |
+
+**Recomendación:** empieza con **un solo modelo**, `DreamShaperXL.safetensors`
+(versátil) o `ponyDiffusionV6XL_v6StartWithThisOne.safetensors` (anime). Los demás
+se añaden después: basta con copiarlos en la carpeta y reiniciar la interfaz.
+
+### 3.2 Hardware
+
 | Qué | Mínimo | Recomendado | Notas |
 |---|---|---|---|
 | Sistema | Windows 10/11, Linux o macOS | Windows 11 | El `.bat` está probado en Windows; el `.sh` cubre Linux/macOS |
-| GPU | NVIDIA con 4 GB VRAM | NVIDIA con 8 GB+ VRAM | Con `--lowvram` funciona en 4 GB. En CPU es posible pero lentísimo (~minutos por imagen) |
-| Python | 3.10 | 3.10.6 | Probado en 3.10.6. Funciona en 3.11/3.12 |
-| Disco | ~15 GB | 40 GB+ | ComfyUI (~5 GB) + cada modelo SDXL pesa ~6.5 GB |
+| **GPU** | NVIDIA con **6 GB VRAM** (**4 GB** con `--lowvram`, más lento) | NVIDIA con **8–12 GB VRAM** | Ver la tabla de VRAM en 3.3. AMD funciona en Linux (ROCm); en Windows es complicado |
+| RAM del sistema | 8 GB | 16 GB | Con `--lowvram` / `--medvram` parte del modelo vive en la RAM: con 8 GB justos puede ir lento o fallar |
+| Python | 3.10 | 3.10.6 | Probado en 3.10.6. Funciona en 3.11 y 3.12 |
+| Disco libre | ~12 GB | 45 GB+ | Ver checklist en 3.1 |
 | ComfyUI | última versión | — | Instalación aparte, ver 4.2 |
 | Navegador | cualquiera moderno | — | La UI se abre en el navegador |
 
-Dependencias de Python de este repositorio (ya están en `requirements.txt`):
+### 3.3 VRAM: cuánta necesitas de verdad
+
+Los 6 modelos del catálogo son **SDXL**, salvo `Realistic_Vision_V5.1` (SD 1.5).
+SDXL es mucho más exigente: subir la resolución puede duplicar la memoria necesaria.
+
+**Modelos SDXL** (Pony, DreamShaper, Nova Comic, Anima Pencil, Juggernaut):
+
+| Resolución | VRAM cómoda | Si tienes menos |
+|---|---|---|
+| 1024×1024 (cuadrada) | 8 GB+ | 6 GB → `--medvram` · 4 GB → `--lowvram` |
+| 1216×832 / 832×1216 | 8 GB+ | 6 GB → `--medvram` · 4 GB → `--lowvram` |
+| 896×1152 (retrato) | 8 GB+ | 6 GB → `--medvram` |
+| 1536×640 (panorámica) | 8 GB+ | 6 GB → `--medvram` |
+| 1408×896 (paisaje) | 10 GB+ | 8 GB → `--medvram` |
+
+**Modelo SD 1.5** (Realistic Vision V5.1): con **4 GB** va sobrado, y hasta se puede
+usar sin GPU en un tiempo aceptable.
+
+Los *flags* se añaden al arrancar ComfyUI (ver sección 6):
+
+- `--lowvram` — pasa casi todo el modelo a la RAM del sistema. Funciona con 4 GB,
+  pero **cada imagen tarda bastante más** (a veces varios minutos).
+- `--medvram` — punto medio, pensado para unos 6 GB.
+- `--cpu` — sin GPU. No recomendado: más de 10 minutos por imagen.
+
+**Velocidad orientativa** con SDXL a 1024×1024 y 25 pasos (varía mucho según GPU
+y resolución):
+
+| GPU | Tiempo por imagen |
+|---|---|
+| RTX 3060 12 GB / 4060 Ti 16 GB | ~15–30 s |
+| RTX 3060 6 GB con `--medvram` | ~30–60 s |
+| GTX 1650 4 GB con `--lowvram` | ~2–5 min |
+| Solo CPU | 10 min o más |
+
+Las resoluciones grandes (1408×896) tardan aproximadamente el doble que 1024×1024.
+
+> **En resumen:** con **6 GB de VRAM y `--medvram`** puedes usar todos los modelos
+> del catálogo a 1024×1024 sin problema. Con 8 GB o más, sin tocar nada.
+
+### 3.4 Dependencias de Python
+
+Ya están en `requirements.txt`; se instalan con un solo comando (paso 4.4):
 
 - `gradio` — la interfaz web
 - `Pillow` — leer y mostrar el PNG generado
@@ -518,7 +595,9 @@ workflows propios.
 | `ComfyUI no responde` en `iniciar.bat` | ComfyUI apagado | Arrancarlo con `--listen` en otra ventana (paso 1 de Uso) |
 | `Error: ComfyUI no genero imagen` | ComfyUI caído a mitad, o timeout (600 s) | Mira la consola de ComfyUI: casi siempre es VRAM o un modelo corrupto |
 | `Value not in list: ckpt_name` en la consola de ComfyUI | El nombre del archivo no está en `checkpoints/` | Revisa mayúsculas y que el archivo esté **directo** en la carpeta, no en una subcarpeta |
-| `CUDA out of memory` | Poca VRAM para SDXL | Arranca ComfyUI con `--lowvram` (o `--medvram`). Baja la resolución a 1024×1024 |
+| `CUDA out of memory` | Poca VRAM para SDXL | Arranca ComfyUI con `--medvram` (6 GB) o `--lowvram` (4 GB). Baja a 1024×1024 o prueba un modelo SD 1.5. Ver 3.3 |
+| La **primera** imagen tarda mucho más que las siguientes | El modelo se está cargando en VRAM/RAM | Normal: la primera carga puede tardar 1–2 min. Las siguientes son rápidas |
+| Va lentísimo y tengo poca VRAM | Estás usando SDXL a resolución alta | Baja la resolución, usa `--lowvram` o cambia a `Realistic_Vision_V5.1` (SD 1.5, mucho más ligero) |
 | Imagen completamente negra o ruido | Modelo incompatible o corrupto | Revisa el tamaño del archivo (un SDXL sano pesa ~6.5 GB). Vuelve a descargarlo |
 | La imagen generada no aparece en la interfaz | El PNG se escribió pero `output_dir` apunta a otro sitio | Comprueba `output_dir` en `config.json`; debe ser la carpeta `output` de **tu** ComfyUI |
 | El navegador se abre en blanco | Puerto 7862 ocupado por un proceso viejo | Cierra el proceso que use el 7862 y vuelve a arrancar |
