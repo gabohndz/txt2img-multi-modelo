@@ -351,6 +351,16 @@ te dice en qué línea.
 
 ## 6. Uso
 
+**Forma rápida (Windows):** doble clic en `iniciar.bat`. Se encarga de todo:
+comprueba Python, localiza ComfyUI, lo arranca si no está corriendo (esperando a
+que responda) y abre la interfaz. Si cambias la línea `set "COMFY_FLAGS=--listen"`
+por `--listen --lowvram`, arrancará ComfyUI con menos VRAM.
+
+**En Linux/macOS:** `./iniciar.sh` arranca solo la interfaz; ComfyUI hay que
+levantarlo aparte (paso 1).
+
+Los pasos manuales (equivalentes a lo que hace el `.bat`) son estos:
+
 ### Paso 1 — Arrancar ComfyUI (en una ventana aparte)
 
 Windows (instalación por Git):
