@@ -1,0 +1,32 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Cache de Python
+__pycache__/
+*.py[cod]
+
+# Configuracion propia (la plantilla config.json SI se versiona)
+config.local.json
+
+# Pesos de modelos: nunca se suben a git (pesan GB)
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+
+# Imagenes generadas
+output/
+salidas/
+resultados/
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

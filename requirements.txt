@@ -1,0 +1,6 @@
+# Dependencias del generador de imagenes multi-modelo.
+# Probado con Python 3.10.6 (Windows 11) y gradio 6.26.0.
+# ComfyUI NO se instala aqui: es un programa aparte (ver README, "Instalacion").
+gradio>=4.44.0
+Pillow>=9.5.0
+numpy>=1.26.0

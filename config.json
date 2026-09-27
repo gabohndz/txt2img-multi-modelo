@@ -1,0 +1,7 @@
+{
+  "comfyui_path": "",
+  "comfyui_api": "http://localhost:8188",
+  "checkpoints_dir": "",
+  "loras_dir": "",
+  "output_dir": ""
+}
